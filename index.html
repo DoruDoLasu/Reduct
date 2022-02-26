@@ -16,6 +16,7 @@
   <br/><br/><br/>
   </div>
   <div id="logged" hidden="true">
+    <button onclick="chchannel()">Change channel</button>
   <input id="a"/>
   <button onclick="sendmessage()">Send</button>
   <button onclick="getmessage()">Get messages</button>
@@ -90,10 +91,12 @@
   document.getElementById("logged").hidden = false;
   }
 
-
-theserver = prompt("enter server id");
+chchannel();
+    
+function chchannel(){
 thechannel = prompt("enter channel id");
-
+}
+  
   async function sendmessage(){
  await fetch("https://api.revolt.chat/channels/"+thechannel+"/messages", {
     "credentials": "omit",
