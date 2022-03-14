@@ -1,0 +1,54 @@
+<html>
+    <head>
+    </head>
+
+    <body>
+    <h1>if nothing displays you probably have javascript off</h1>
+    <script>
+    var emoteget = new XMLHttpRequest();
+    emoteget.open("GET", "https://raw.githubusercontent.com/revoltchat/revite/master/src/assets/emojis.ts", true);
+    emoteget.onreadystatechange = function() {
+    if (emoteget.readyState === 4) {
+    if (emoteget.status === 200) {
+    thething = emoteget.responseText;
+
+    actuallines = thething.split("\n");
+    lines = thething.split(/\n|:/);
+    document.writeln("<h1>Revolt emote list</h1>");
+    document.writeln('<h2>Straight from <a href="https://github.com/revoltchat/revite/blob/master/src/assets/emojis.ts">the Revolt Github</a> , last updated right now in your browser</h2>');
+    document.writeln('<h2>the custom ones are near the end</h2>');
+    document.writeln('<center><table border="1">');
+    for(let i=1;i<actuallines.length-3;i=i+2){
+        document.writeln("<tr>");
+        textemote = actuallines[i].split(":");
+        if (textemote.length == 2){
+            document.writeln('<th>'+textemote[0]+"</th>"+'<th><h3 style="font-size:32px">'+textemote[1].slice(2,-2)+"</h3></th>" );
+        }
+        else if (textemote.length == 3){
+            document.writeln("<th>"+textemote[0]+"</th>"+'<th><img src="https://dl.insrt.uk/projects/revolt/emotes/'+textemote[2].split("\"")[0]+'" width="64" height="64"></th>');
+        }
+        textemote = actuallines[i+1].split(":");
+        if (textemote.length == 2){
+            document.writeln('<th>'+textemote[0]+"</th>"+'<th><h3 style="font-size:32px">'+textemote[1].slice(2,-2)+"</h3></th>" );
+        }
+        else if (textemote.length == 3){
+            document.writeln("<th>"+textemote[0]+"</th>"+'<th><img src="https://dl.insrt.uk/projects/revolt/emotes/'+textemote[2].split("\"")[0]+'" width="64" height="64"></th>');
+        }
+        document.writeln("</tr>");
+
+    }
+    document.writeln("</table></center>");
+
+
+    }
+  }
+}
+    emoteget.send(null);
+
+
+
+
+    </script>
+
+    </body>
+</html>
