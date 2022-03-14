@@ -1,0 +1,50 @@
+<html>
+    <head>
+    </head>
+
+    <body>
+    <h1>if nothing displays you probably have javascript off</h1>
+    <script>
+    var emoteget = new XMLHttpRequest();
+    emoteget.open("GET", "https://raw.githubusercontent.com/revoltchat/revite/master/src/assets/emojis.ts", true);
+    emoteget.onreadystatechange = function() {
+    if (emoteget.readyState === 4) {
+    if (emoteget.status === 200) {
+    thething = emoteget.responseText;
+
+    actuallines = thething.split("\n");
+    lines = thething.split(/\n|:/);
+
+
+
+    customemotespaceactivated=0;
+    for(let i=1;i<actuallines.length-3;i++){
+        textemote = actuallines[i].split(":");
+        if (textemote.length == 2){
+
+            document.writeln('<button style="font-size:32px" onclick="navigator.clipboard.writeText(\':' + textemote[0].replace(/\s+/g, '') + ':\');">'+textemote[1].slice(2,-2)+"</button>");
+            te = textemote;
+        }
+        else if (textemote.length == 3){
+            if(customemotespaceactivated == 0) {
+                document.writeln('<h1>Custom:</h1>');
+                customemotespaceactivated=1;
+            }
+            document.writeln('<input type="image" src="https://dl.insrt.uk/projects/revolt/emotes/'+textemote[2].split("\"")[0]+'" width="64" height="64"  onclick="navigator.clipboard.writeText(\':' + textemote[2].split('.')[0] + ':\');"></input>');
+        }
+
+    }
+
+
+    }
+  }
+}
+    emoteget.send(null);
+
+
+
+
+    </script>
+
+    </body>
+</html>
