@@ -105,7 +105,7 @@ thechannel = prompt("enter channel id");
         "Content-Type": "application/json",
         "x-session-token": thetoken
     },
-    "body": "{\"nonce\":\"\",\"content\":\" " + document.getElementById("a").value + "\",\"replies\":[]}",
+    "body": "{\"content\":\" " + document.getElementById("a").value + "\",\"replies\":[]}",
     "method": "POST",
 });
 getmessage();
