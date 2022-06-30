@@ -1,0 +1,345 @@
+<!-- MIT License
+
+Copyright (c) 2022 DoruDoLasu
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE. -->
+
+
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.5">
+  <title>Reduct V2.5 "Nextext"</title>
+</head>
+
+<body>
+    <h1 id="logo">Reduct V2.5 "Nextext" Beta</h1>
+    <h4 id="logo2">the newer beta version of a revolt.chat client held together by duct tape and bad code</h4>
+    <!-- <h3 id="channelname">No channel</h3> -->
+
+
+    <div id="messages" style="width: 90vw;height: 85vh;overflow-y: scroll;"></div>
+
+    <div id="loggingin" style="text-align: center;">
+      <input id="token"/>ENTER TOKEN HERE and press ok
+      <button onclick="login()">ok</button>
+    </div>
+
+    <div id="allcontrols" style="text-align: center;">
+    <span id="precontrols">
+      <button onclick="changeservchannel()">Change server</button>
+      <button onclick="chchannel()">Change channel</button>
+    </span>
+    <span id="controls">
+      <input id="a"/>
+      <button id="send" onclick="sendmessagelegacy()">Send</button>
+      <button id="gett" onclick="getmessagelegacy()">Get messages</button>
+    </span>
+    </div>
+
+    <div id="changechannel" style="test-align: center;">
+    </div>
+
+
+
+  <style>
+    span {border-style: dotted;}
+    h1#logo {margin: 0px; background-color:#FD6671;display:inline-block; }
+    h2#newm {margin: 0px}
+    h3#channelname {margin: 0px; margin-left: 20px}
+    h4#logo2 {margin: 0px;background-color:#848484;display:inline-block;}
+    span.author {margin-left: 5px;color:yellowgreen}
+    span.maskedauthor {margin-left: 5px;color:#ff6d6c}
+    h5#content {border-style: solid; border-width: 1px;margin: 10px;color:#eaeaea}
+  h5#filename {margin:0px;color:#989898}
+    a {color:#FD6671}
+    div#messages {border:solid 5px;margin-left:5vw;margin-right:5vw;background-color:#363636}
+    img.embed {max-height:20vw;max-width: 60vw}
+    img.pfp {margin-bottom: -2px}
+    video {height:20vw}
+
+
+    body {background-color: #242424}
+  </style>
+
+<script>
+
+var theusers = {};
+var thetoken = undefined;
+var thechannel = undefined;
+/*uncomment and put your token if used locally, gonna spare you the effort*/
+/*thetoken = "";*/
+
+
+
+if (thetoken !== undefined) {
+  document.getElementById("loggingin").hidden = true;
+  document.getElementById("controls").hidden = false;
+}
+if (thechannel === undefined) {
+  document.getElementById("controls").hidden = true;
+}
+function login() {
+   thetoken = document.getElementById("token").value;
+    document.getElementById("loggingin").hidden = true;
+
+
+
+
+
+    var getfetch = new XMLHttpRequest();
+getfetch.open("POST", "https://api.revolt.chat/sync/settings/fetch", true);
+getfetch.setRequestHeader("x-session-token", thetoken);
+getfetch.setRequestHeader("Accept", "*/*");
+getfetch.onreadystatechange = function() {
+    if(getfetch.readyState === 4) {
+        if(getfetch.status === 200) {
+            thethingo = getfetch.responseText;
+            theparsedfetch = JSON.parse(thethingo);
+            serverlist = JSON.parse(theparsedfetch['ordering'][1])['servers'];
+            changeservchannel();
+            }
+    }
+}
+getfetch.send('{"keys":["ordering"]}');
+
+
+  }
+
+
+
+function changeservchannel(){
+
+  document.getElementById("messages").innerHTML = '<h1>Select server: </h1><select name="seletcc" id="selectt"></select>';
+  serverlist.forEach(function(item, index) {
+    document.getElementById("selectt").innerHTML += '<option value="' + item + '">' + index + ': ' + item + '</option>';
+})
+  document.getElementById("messages").innerHTML += '<button onclick="chserver()">ok</button>';
+}
+
+function getserver(){
+  var getserver = new XMLHttpRequest();
+  getserver.open("GET", "https://api.revolt.chat/servers/"+theserver, true);
+  getserver.setRequestHeader("x-session-token", thetoken);
+  getserver.setRequestHeader("Accept", "*/*");
+  getserver.onreadystatechange = function() {
+      if(getserver.readyState === 4){
+          if(getserver.status === 200){
+              thethingo = getserver.responseText;
+              theparsedserver = JSON.parse(thethingo);
+              }
+      }
+  }
+  getserver.send(null);
+}
+
+
+
+
+
+function chserver(){
+  theserver = document.getElementById('selectt').value ;
+  getserver();
+  document.getElementById("messages").innerHTML += '<h1>Ok, now select the channel</h1>';
+}
+
+
+
+
+
+
+function chchannel(){
+  document.getElementById("messages").innerHTML = '<h1>'+theparsedserver.name+'</h1><h2>Select channel: </h2><select name="seletcc" id="selectt"></select>';
+  theparsedserver.channels.forEach(function(item, index) {
+    document.getElementById("selectt").innerHTML += '<option value="' + item + '">' + index + ': ' + item + '</option>';
+})
+  document.getElementById("messages").innerHTML += '<button onclick="chchannelnext()">ok</button>';
+
+
+}
+
+function chchannelnext(){
+  thechannel = document.getElementById('selectt').value ;
+  lastmessage = undefined;
+  document.getElementById("messages").innerHTML = "";
+  document.getElementById("controls").hidden = false;
+  getmessagelegacy();
+}
+
+
+
+function sendmessagelegacy(){
+  var sendmsgsa = new XMLHttpRequest();
+  sendmsgsa.open("POST", "https://api.revolt.chat/channels/"+thechannel+"/messages", true);
+  sendmsgsa.setRequestHeader("x-session-token", thetoken);
+  sendmsgsa.setRequestHeader("Accept", "*/*");
+  sendmsgsa.setRequestHeader("Content-Type", "application/json");
+
+  sendmsgsa.onreadystatechange = function(){
+    if(sendmsgsa.readyState === 4){
+        if(sendmsgsa.status === 200){
+            console.log("Message sent");
+            }
+    }
+  }
+    sendmsgsa.send("{\"content\":\" " + document.getElementById("a").value + "\",\"replies\":[]}");
+    setTimeout(function () { getmessagelegacy(); document.getElementById("a").value = "" }, 1000);
+  }
+
+
+  function deletemessage(messid){
+  var sendmsgsa = new XMLHttpRequest();
+  sendmsgsa.open("DELETE", "https://api.revolt.chat/channels/"+thechannel+"/messages/"+messid, true);
+  sendmsgsa.setRequestHeader("x-session-token", thetoken);
+  sendmsgsa.setRequestHeader("Accept", "*/*");
+  sendmsgsa.setRequestHeader("Content-Type", "application/json");
+
+  sendmsgsa.onreadystatechange = function(){
+    if(sendmsgsa.readyState === 4){
+        if(sendmsgsa.status === 204){
+            console.log("Message deleted");
+            setTimeout(function () { document.getElementById(messid).remove(); getmessagelegacy();  }, 1000);
+            }
+    }
+  }
+  sendmsgsa.send("{\"content\":\" " + document.getElementById("a").value + "\",\"replies\":[]}");
+
+
+
+
+  }
+
+
+
+
+
+function rendermessages(){
+              for (var i=0; i < theparsedthing.users.length; i++) {
+                  if (theusers[theparsedthing.users[i]._id] === undefined){
+                    if (theparsedthing.users[i].avatar !== undefined){
+                      theusers[theparsedthing.users[i]._id] = [theparsedthing.users[i].username,theparsedthing.users[i].avatar._id];
+                    }
+                    else {
+                      theusers[theparsedthing.users[i]._id] = [theparsedthing.users[i].username, "nope"];
+                    }
+                  }
+              }
+
+
+
+              if (theparsedthing.messages[0] !== undefined){
+                if (document.getElementById("newm") !== null){
+                  document.getElementById("newm").remove();
+                }
+                document.getElementById("messages").innerHTML += '<h2 id="newm">===</h2>';
+                for(var i=theparsedthing.messages.length-1;i>=0;i--){
+                  if (theparsedthing.messages[i].system !== undefined) {
+                  document.getElementById("messages").innerHTML += '<div id="'+theparsedthing.messages[i]._id+'">'+'<span class="author">SYSTEM (!!!)</span>'
+
+
+                  }
+
+
+                  else if (theusers[theparsedthing.messages[i].author][1] == "nope") {
+                   document.getElementById("messages").innerHTML += '<div id="'+theparsedthing.messages[i]._id+'">'+'<span class="author">'+theusers[theparsedthing.messages[i].author][0]+'</span>'
+
+                  }
+
+                  else if (theparsedthing.messages[i].masquerade !== undefined) {document.getElementById("messages").innerHTML += '<div id="'+theparsedthing.messages[i]._id+'"><span class="maskedauthor">' + theparsedthing.messages[i].masquerade.name +  ' (masked '+theusers[theparsedthing.messages[i].author][0]+')</span>'
+                  }
+
+                  else {
+                  document.getElementById("messages").innerHTML += '<div id="'+theparsedthing.messages[i]._id+'">'+'<span class="author"><img class="pfp" src="https://autumn.revolt.chat/avatars/'+ theusers[theparsedthing.messages[i].author][1] +'?max_side=32"/>'+theusers[theparsedthing.messages[i].author][0]+'</span>'
+                  }
+
+                  if (theparsedthing.messages[i].replies !== undefined) {
+                    for (rep=0;rep<theparsedthing.messages[i].replies.length;rep++){
+                    document.getElementById("messages").innerHTML += 'replies to <a href="#' + theparsedthing.messages[i].replies[rep] + '">['+(rep+1)+']</a>'
+                    }
+                  }
+                  if (theparsedthing.messages[i].content !== undefined) {
+                  document.getElementById("messages").innerHTML += '<h5 id="content">'+theparsedthing.messages[i].content+'</h5></div>'
+                  }
+
+
+
+                  /* EMBEDS */
+
+                  if (theparsedthing.messages[i].attachments !== undefined){
+                    theparsedthing.messages[i].attachments.forEach(function(item, index) {
+
+                    document.getElementById("messages").innerHTML += '<h5 id="filename">'+theparsedthing["messages"][i]["attachments"][index]["filename"]+' <a href="https://autumn.revolt.chat/attachments/' + theparsedthing["messages"][i]["attachments"][index]["_id"] + '" target="_blank" rel="noopener noreferrer">⇓</a></h5>';
+
+                    if (theparsedthing["messages"][i]["attachments"][index]["metadata"]["type"] == "Image") {document.getElementById("messages").innerHTML += '<img class="embed" src="https://autumn.revolt.chat/attachments/' + theparsedthing["messages"][i]["attachments"][index]["_id"] + '"></img>'}
+
+                    else if (theparsedthing["messages"][i]["attachments"][index]["metadata"]["type"] == "Audio") {document.getElementById("messages").innerHTML += '<audio controls preload="none"><source src="https://autumn.revolt.chat/attachments/' + theparsedthing["messages"][i]["attachments"][index]["_id"] + '" type="'+theparsedthing.messages[i].attachments[index].content_type+'"></audio>'}
+
+                    else if (theparsedthing["messages"][i]["attachments"][index]["metadata"]["type"] == "Video") {document.getElementById("messages").innerHTML += '<video controls preload="none"><source src="https://autumn.revolt.chat/attachments/' + theparsedthing["messages"][i]["attachments"][index]["_id"] + '" type="'+theparsedthing.messages[i].attachments[index].content_type+'"></video>'}
+
+                    else if (theparsedthing["messages"][i]["attachments"][index].content_type == "video/ogg")
+                    {document.getElementById("messages").innerHTML += '<audio controls preload="none"><source src="https://autumn.revolt.chat/attachments/' + theparsedthing["messages"][i]["attachments"][index]["_id"] + '" type="'+theparsedthing.messages[i].attachments[index].content_type+'"></audio>'}
+
+                    else if (theparsedthing["messages"][i]["attachments"][index].content_type == "application/x-riff")
+                    {document.getElementById("messages").innerHTML += '<audio controls preload="none"><source src="https://autumn.revolt.chat/attachments/' + theparsedthing["messages"][i]["attachments"][index]["_id"] + '" type="audio/wav"></audio>'}
+
+
+                    });
+
+                  }
+
+                }
+
+                lastmessage = theparsedthing.messages[0]._id
+              };
+        }
+
+
+
+
+
+
+function getmessagelegacy(){
+  var getmsgsa = new XMLHttpRequest();
+  if (typeof lastmessage == 'undefined'){
+    getmsgsa.open("GET", "https://api.revolt.chat/channels/"+thechannel+"/messages?include_users=true", true);
+  }
+  else {
+    getmsgsa.open("GET", "https://api.revolt.chat/channels/"+thechannel+"/messages?include_users=true&after="+lastmessage, true);
+  }
+  getmsgsa.setRequestHeader("x-session-token", thetoken);
+  getmsgsa.setRequestHeader("Accept", "*/*");
+  getmsgsa.onreadystatechange = function() {
+      if(getmsgsa.readyState === 4){
+          if(getmsgsa.status === 200){
+              thething = getmsgsa.responseText;
+              theparsedthing = JSON.parse(thething);
+              rendermessages();
+              document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
+		}
+	}
+}
+getmsgsa.send(null);
+}
+
+</script>
+</body>
+</html>
