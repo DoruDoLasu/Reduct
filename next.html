@@ -28,193 +28,224 @@ SOFTWARE. -->
     <meta name="viewport" content="width=device-width, initial-scale=1.5">
     <title>Reduct V2 (Open Beta)</title>
   </head>
+
+
   <body>
     <h1 id="logo">Reduct V2 Beta</h1>
     <h4 id="logo2">the new beta version of a revolt.chat client held together by duct tape and bad code</h4>
     <!-- <h3 id="channelname">No channel</h3> -->
+
+
     <div id="messages" style="width: 90vw;height: 65vh;overflow-y: scroll;">
     </div>
+
+
     <div id="loggingin" style="text-align: center;">
       <input id="token"/>ENTER TOKEN HERE and press ok
       <button onclick="login()">ok</button>
     </div>
+
+
     <div id="controls" style="text-align: center;">
       <button onclick="chchannel()">Change channel</button>
-      <input id="messagebox"/>
-      <button id="send" onclick="sendmessages()">Send</button>
-      <button onclick="getmsgs()">Get messages</button>
+      <input id="a"/>
+      <button id="send" onclick="sendmessagelegacy()">Send</button>
+      <button onclick="getmessagelegacy()">Get messages</button>
     </div>
+
     <div id="changechannel" style="test-align: center;">
     </div>
-    <style>
-      span {border-style: dotted;}
-      h1#logo {margin: 0px; background-color:#FD6671;display:inline-block; }
-      h2#newm {margin: 0px}
-      h3#channelname {margin: 0px; margin-left: 20px}
-      h4#logo2 {margin: 0px;background-color:#848484;display:inline-block;}
-      span.author {margin-left: 5px;color:yellowgreen}
-      span.maskedauthor {margin-left: 5px;color:#ff6d6c}
-      h5#content {border-style: solid; border-width: 1px;margin: 10px;color:#eaeaea}
-      h5#filename {margin:0px;color:#989898}
-      a {color:#FD6671}
-      div#messages {border:solid 5px;margin-left:5vw;margin-right:5vw;background-color:#363636}
-      img.embed {max-height:20vw;max-width: 60vw}
-      img.pfp {margin-bottom: -2px}
-      video {height:20vw}
-      body {background-color: #242424}
-    </style>
+
+
+
+  <style>
+    span {border-style: dotted;}
+    h1#logo {margin: 0px; background-color:#FD6671;display:inline-block; }
+    h2#newm {margin: 0px}
+    h3#channelname {margin: 0px; margin-left: 20px}
+    h4#logo2 {margin: 0px;background-color:#848484;display:inline-block;}
+    span.author {margin-left: 5px;color:yellowgreen}
+    span.maskedauthor {margin-left: 5px;color:#ff6d6c}
+    h5#content {border-style: solid; border-width: 1px;margin: 10px;color:#eaeaea}
+  h5#filename {margin:0px;color:#989898}
+    a {color:#FD6671}
+    div#messages {border:solid 5px;margin-left:5vw;margin-right:5vw;background-color:#363636}
+    img.embed {max-height:20vw;max-width: 60vw}
+    img.pfp {margin-bottom: -2px}
+    video {height:20vw}
+
+
+    body {background-color: #242424}
+  </style>
 
   <script>
 
 
-// The program stuff begins here
-
-
-/// You can uncomment the line below and put your valid Revolt token there if you're running it locally just for yourself
-/// For more info on how to get the token, visit https://infi.sh/post/revolt-tokens
-//thetoken = "entertokenhere";
-///
-thechannel = "01FXJQ6P92D3HXCRCAFWJDRNDJ";
-/// Variables below are supposed to be like that, so don't change theem for no reason.
 theusers = {};
+thetoken = undefined;
 
-/// Ok, from here things start going on
-if (thetoken !== undefined)                              {
-  document.getElementById("loggingin").hidden = true;
-  document.getElementById("controls").hidden = false;
-                                                         }
-
-function login()                                         {
-  thetoken = document.getElementById("token").value     ;
-  document.getElementById("loggingin").hidden = true    ;
-  document.getElementById("controls").hidden = false    ;}
-
-
-function chchannel()                                     {
-  thechannel = prompt("enter channel id")               ;
-  lastmessage = undefined                               ;
-  document.getElementById("messages").innerHTML = ""    ;
-  getmsgs()                                    ;}
+function chchannel(){
+thechannel = prompt("enter channel id");
+lastmessage = undefined;
+document.getElementById("messages").innerHTML = "";
+getmessagelegacy();
+}
 
 
 
+  function login()
+  {
+   thetoken = document.getElementById("token").value;
+    document.getElementById("loggingin").hidden = true;
+    document.getElementById("controls").hidden = false;
+  }
+
+  thechannel = "01F7ZSBSFHCAAJQ92ZGTY67HMN";
+
+  if (thetoken !== undefined) {
+    document.getElementById("loggingin").hidden = true;
+    document.getElementById("controls").hidden = false;
+  }
+
+/*uncomment and put your token if used locally, gonna spare you the effort*/
+/*thetoken = "";*/
 
 
-function sendmessages()                                                 {
-  var https = new XMLHttpRequest()                                      ;
-  https.open("POST",
-    "https://api.revolt.chat/channels/"+thechannel+"/messages", true)   ;
-  https.setRequestHeader("x-session-token", thetoken)                   ;
-  https.setRequestHeader("Accept", "*/*")                               ;
-  https.setRequestHeader("Content-Type", "application/json")            ;
-  https.onreadystatechange =
-    function()                                                          {
-      if(https.readyState === 4)                                        {
-        if(https.status === 200)                                        {
-            console.log("Message sent")                                 ;
-                                                                        }}}
-  https.send(JSON.stringify(                                            {
-    content: document.getElementById("messagebox").value,
-    replies: []                                                         }));
+function sendmessagelegacy(){
+  var sendmsgsa = new XMLHttpRequest();
+  sendmsgsa.open("POST", "https://api.revolt.chat/channels/"+thechannel+"/messages", true);
+  sendmsgsa.setRequestHeader("x-session-token", thetoken);
+  sendmsgsa.setRequestHeader("Accept", "*/*")
+  sendmsgsa.setRequestHeader("Content-Type", "application/json")
 
-  setTimeout(
-    function () {
-      getmsgs();
-      document.getElementById("messagebox").value = "" }, 1000          );
-                                                                        }
+  sendmsgsa.onreadystatechange = function(){
+    if(sendmsgsa.readyState === 4){
+        if(sendmsgsa.status === 200){
+            console.log("Message sent");
+            }
+    }
+  }
+  sendmsgsa.send("{\"content\":\" " + document.getElementById("a").value + "\",\"replies\":[]}");
 
 
+  setTimeout(function () { getmessagelegacy(); document.getElementById("a").value = "" }, 1000);
+
+  }
 
 
-  function deletemessage(messid)                                             {
-  var https = new XMLHttpRequest()                                           ;
-  https.open("DELETE",
-    "https://api.revolt.chat/channels/"+thechannel+"/messages/"+messid,
-      true)                                                                  ;
-  https.setRequestHeader("x-session-token", thetoken)                        ;
-  https.setRequestHeader("Accept", "*/*")                                    ;
-  https.setRequestHeader("Content-Type", "application/json")                 ;
+  function deletemessage(messid){
+  var sendmsgsa = new XMLHttpRequest();
+  sendmsgsa.open("DELETE", "https://api.revolt.chat/channels/"+thechannel+"/messages/"+messid, true);
+  sendmsgsa.setRequestHeader("x-session-token", thetoken);
+  sendmsgsa.setRequestHeader("Accept", "*/*")
+  sendmsgsa.setRequestHeader("Content-Type", "application/json")
 
-  https.onreadystatechange = function()                                      {
-    if(https.readyState === 4)                                               {
-        if(https.status === 204)                                             {
-            console.log("Message deleted")                                   ;
-            setTimeout(
-              function () {
-                document.getElementById(messid).remove();
-                getmsgs();  }, 1000                                          );
-                                                                             }
-                                                                             }
-                                                                             }
-  https.send(null);
-                                                                             }
-
-function getmsgs()                                                            {
-  var https = new XMLHttpRequest()                                            ;
-  if (typeof lastmessage == 'undefined')                                      {
-    https.open("GET",
-      "https://api.revolt.chat/channels/"+thechannel+"/messages?include_users=true",
-        true);                                                                }
-  else                                                                        {
-    https.open("GET",
-      "https://api.revolt.chat/channels/"+thechannel+"/messages?include_users=true&after="+lastmessage,
-        true);                                                                }
-  https.setRequestHeader("x-session-token", thetoken)                         ;
-  https.setRequestHeader("Accept", "*/*")                                     ;
-  https.onreadystatechange = function()                                       {
-      if(https.readyState === 4)                                                {
-          if(https.status === 200)                                              {
-              thething = https.responseText                                     ;
-
-              theparsedthing = JSON.parse(thething)                             ;
-              for (var i=0; i < theparsedthing.users.length; i++)               {
-                  if (theusers[theparsedthing.users[i]._id] === undefined)      {
-                    if (theparsedthing.users[i].avatar !== undefined)           {
-                      theusers[theparsedthing.users[i]._id] =
-                      [theparsedthing.users[i].username,
-                      theparsedthing.users[i].avatar._id];                      }
-                    else                                                        {
-                      theusers[theparsedthing.users[i]._id] =
-                      [theparsedthing.users[i].username, "nope"];             }}}
+  sendmsgsa.onreadystatechange = function(){
+    if(sendmsgsa.readyState === 4){
+        if(sendmsgsa.status === 204){
+            console.log("Message deleted");
+            setTimeout(function () { document.getElementById(messid).remove(); getmessagelegacy();  }, 1000);
+            }
+    }
+  }
+  sendmsgsa.send("{\"content\":\" " + document.getElementById("a").value + "\",\"replies\":[]}");
 
 
 
-              if (theparsedthing.messages[0] !== undefined)                              {
-                if (document.getElementById("newm") !== null)                            {
-                  document.getElementById("newm").remove()                               ;}
-                document.getElementById("messages").innerHTML +=
-                  '<h2 id="newm">===</h2>'                                               ;
-                for(var i=theparsedthing.messages.length-1;i>=0;i--)                     {
-                  if (theusers[theparsedthing.messages[i].author][1] == "nope")          {
-                    document.getElementById("messages").innerHTML +=
-                      '<div id="'+theparsedthing.messages[i]._id+'">'+
-                      '<span class="author">'+theusers[theparsedthing.messages[i].author][0]+
-                      '</span>'
-                                                                                        }
-                  else if (theparsedthing.messages[i].masquerade !== undefined)         {
-                    document.getElementById("messages").innerHTML +=
-                      '<div id="'+theparsedthing.messages[i]._id+'"><span class="maskedauthor">' +
-                      theparsedthing.messages[i].masquerade.name +
-                      ' (masked '+theusers[theparsedthing.messages[i].author][0]+')</span>'
-                                                                                        }
 
-                  else                                                                  {
-                  document.getElementById("messages").innerHTML +=
-                    '<div id="'+theparsedthing.messages[i]._id+'">'+
-                    '<span class="author"><img class="pfp" src="https://autumn.revolt.chat/avatars/'+
-                    theusers[theparsedthing.messages[i].author][1] + '?max_side=32"/>'+
-                    theusers[theparsedthing.messages[i].author][0]+'</span>'
-                                                                                        }
-                  if (theparsedthing.messages[i].replies !== undefined)                 {
-                    for (rep=0;rep<theparsedthing.messages[i].replies.length;rep++)     {
-                    document.getElementById("messages").innerHTML +=
-                      'replies to <a href="#' + theparsedthing.messages[i].replies[rep] + '">['+(rep+1)+']</a>'
-                                                                                        }
+  }
+
+function getserver(){
+  var getserver = new XMLHttpRequest();
+  getserver.open("GET", "https://api.revolt.chat/servers/"+theserver, true);
+  getserver.setRequestHeader("x-session-token", thetoken);
+  getserver.setRequestHeader("Accept", "*/*");
+  getserver.onreadystatechange = function() {
+      if(getserver.readyState === 4){
+          if(getserver.status === 200){
+              thethingo = getserver.responseText;
+              theparsedserver = JSON.parse(thethingo);
+
+              document.getElementById("channelname").innerText = theparsedserver.name;
+
+
+              }
+      }
+  }
+  getserver.send(null);
+}
+
+
+
+
+
+
+
+
+/* New function to get messages that is backwards compatible with older browsers like the others */
+
+function getmessagelegacy(){
+  var getmsgsa = new XMLHttpRequest();
+  if (typeof lastmessage == 'undefined'){
+    getmsgsa.open("GET", "https://api.revolt.chat/channels/"+thechannel+"/messages?include_users=true", true);
+  }
+  else {
+    getmsgsa.open("GET", "https://api.revolt.chat/channels/"+thechannel+"/messages?include_users=true&after="+lastmessage, true);
+  }
+  getmsgsa.setRequestHeader("x-session-token", thetoken);
+  getmsgsa.setRequestHeader("Accept", "*/*");
+  getmsgsa.onreadystatechange = function() {
+      if(getmsgsa.readyState === 4){
+          if(getmsgsa.status === 200){
+              thething = getmsgsa.responseText;
+
+              theparsedthing = JSON.parse(thething);
+              for (var i=0; i < theparsedthing.users.length; i++) {
+                  if (theusers[theparsedthing.users[i]._id] === undefined){
+                    if (theparsedthing.users[i].avatar !== undefined){
+                      theusers[theparsedthing.users[i]._id] = [theparsedthing.users[i].username,theparsedthing.users[i].avatar._id];
+                    }
+                    else {
+                      theusers[theparsedthing.users[i]._id] = [theparsedthing.users[i].username, "nope"];
+                    }
+                  }
+              }
+
+
+
+              if (theparsedthing.messages[0] !== undefined){
+                if (document.getElementById("newm") !== null){
+                  document.getElementById("newm").remove();
+                }
+                document.getElementById("messages").innerHTML += '<h2 id="newm">===</h2>';
+                for(var i=theparsedthing.messages.length-1;i>=0;i--){
+                  if (theparsedthing.messages[i].system !== undefined) {
+                  document.getElementById("messages").innerHTML += '<div id="'+theparsedthing.messages[i]._id+'">'+'<span class="author">SYSTEM (!!!)</span>'
+
+
                   }
 
-                  document.getElementById("messages").innerHTML +=
-                    '<h5 id="content">'+theparsedthing.messages[i].content+'</h5></div>'
 
+                  else if (theusers[theparsedthing.messages[i].author][1] == "nope") {
+                   document.getElementById("messages").innerHTML += '<div id="'+theparsedthing.messages[i]._id+'">'+'<span class="author">'+theusers[theparsedthing.messages[i].author][0]+'</span>'
+
+                  }
+
+                  else if (theparsedthing.messages[i].masquerade !== undefined) {document.getElementById("messages").innerHTML += '<div id="'+theparsedthing.messages[i]._id+'"><span class="maskedauthor">' + theparsedthing.messages[i].masquerade.name +  ' (masked '+theusers[theparsedthing.messages[i].author][0]+')</span>'
+                  }
+
+                  else {
+                  document.getElementById("messages").innerHTML += '<div id="'+theparsedthing.messages[i]._id+'">'+'<span class="author"><img class="pfp" src="https://autumn.revolt.chat/avatars/'+ theusers[theparsedthing.messages[i].author][1] +'?max_side=32"/>'+theusers[theparsedthing.messages[i].author][0]+'</span>'
+                  }
+
+                  if (theparsedthing.messages[i].replies !== undefined) {
+                    for (rep=0;rep<theparsedthing.messages[i].replies.length;rep++){
+                    document.getElementById("messages").innerHTML += 'replies to <a href="#' + theparsedthing.messages[i].replies[rep] + '">['+(rep+1)+']</a>'
+                    }
+                  }
+                  if (theparsedthing.messages[i].content !== undefined) {
+                  document.getElementById("messages").innerHTML += '<h5 id="content">'+theparsedthing.messages[i].content+'</h5></div>'
+                  }
 
 
 
@@ -223,54 +254,43 @@ function getmsgs()                                                            {
                   if (theparsedthing.messages[i].attachments !== undefined){
                     theparsedthing.messages[i].attachments.forEach(function(item, index) {
 
-                    document.getElementById("messages").innerHTML +=
-                      '<h5 id="filename">'+theparsedthing["messages"][i]["attachments"][index]["filename"]+
-                      ' <a href="https://autumn.revolt.chat/attachments/' + theparsedthing["messages"][i]["attachments"][index]["_id"] +
-                      '" target="_blank" rel="noopener noreferrer">⇓</a></h5>';
+                    document.getElementById("messages").innerHTML += '<h5 id="filename">'+theparsedthing["messages"][i]["attachments"][index]["filename"]+' <a href="https://autumn.revolt.chat/attachments/' + theparsedthing["messages"][i]["attachments"][index]["_id"] + '" target="_blank" rel="noopener noreferrer">⇓</a></h5>';
 
-                    ttype = theparsedthing["messages"][i]["attachments"][index]["metadata"]["type"]
+                    if (theparsedthing["messages"][i]["attachments"][index]["metadata"]["type"] == "Image") {document.getElementById("messages").innerHTML += '<img class="embed" src="https://autumn.revolt.chat/attachments/' + theparsedthing["messages"][i]["attachments"][index]["_id"] + '"></img>'}
 
-                    if ( ttype == "Image") {
-                      document.getElementById("messages").innerHTML +=
-                      '<img class="embed" src="https://autumn.revolt.chat/attachments/' + theparsedthing["messages"][i]["attachments"][index]["_id"] + '"></img>'}
+                    else if (theparsedthing["messages"][i]["attachments"][index]["metadata"]["type"] == "Audio") {document.getElementById("messages").innerHTML += '<audio controls preload="none"><source src="https://autumn.revolt.chat/attachments/' + theparsedthing["messages"][i]["attachments"][index]["_id"] + '" type="'+theparsedthing.messages[i].attachments[index].content_type+'"></audio>'}
 
-                    else if ( ttype == "Audio") {
-                      document.getElementById("messages").innerHTML +=
-                      '<audio controls preload="none"><source src="https://autumn.revolt.chat/attachments/' + theparsedthing["messages"][i]["attachments"][index]["_id"] +
-                      '" type="'+theparsedthing.messages[i].attachments[index].content_type+'"></audio>'}
+                    else if (theparsedthing["messages"][i]["attachments"][index]["metadata"]["type"] == "Video") {document.getElementById("messages").innerHTML += '<video controls preload="none"><source src="https://autumn.revolt.chat/attachments/' + theparsedthing["messages"][i]["attachments"][index]["_id"] + '" type="'+theparsedthing.messages[i].attachments[index].content_type+'"></video>'}
 
-                    else if ( ttype == "Video") {
-                      document.getElementById("messages").innerHTML += '<video controls preload="none"><source src="https://autumn.revolt.chat/attachments/' + theparsedthing["messages"][i]["attachments"][index]["_id"] + '" type="'+theparsedthing.messages[i].attachments[index].content_type+'"></video>'}
+                    else if (theparsedthing["messages"][i]["attachments"][index].content_type == "video/ogg")
+                    {document.getElementById("messages").innerHTML += '<audio controls preload="none"><source src="https://autumn.revolt.chat/attachments/' + theparsedthing["messages"][i]["attachments"][index]["_id"] + '" type="'+theparsedthing.messages[i].attachments[index].content_type+'"></audio>'}
 
-                    else if (theparsedthing["messages"][i]["attachments"][index].content_type == "video/ogg") {
-                      document.getElementById("messages").innerHTML += '<audio controls preload="none"><source src="https://autumn.revolt.chat/attachments/' + theparsedthing["messages"][i]["attachments"][index]["_id"] + '" type="'+theparsedthing.messages[i].attachments[index].content_type+'"></audio>'}
-
-                    else if (theparsedthing["messages"][i]["attachments"][index].content_type == "application/x-riff") {
-                      document.getElementById("messages").innerHTML += '<audio controls preload="none"><source src="https://autumn.revolt.chat/attachments/' + theparsedthing["messages"][i]["attachments"][index]["_id"] + '" type="audio/wav"></audio>'}
+                    else if (theparsedthing["messages"][i]["attachments"][index].content_type == "application/x-riff")
+                    {document.getElementById("messages").innerHTML += '<audio controls preload="none"><source src="https://autumn.revolt.chat/attachments/' + theparsedthing["messages"][i]["attachments"][index]["_id"] + '" type="audio/wav"></audio>'}
 
 
-                                                                                                                      });
+                    });
 
-                                                                                                                      }
+                  }
 
-                                                                                                                      }
+                }
 
                 lastmessage = theparsedthing.messages[0]._id
-                                                                                                                      };
+              };
 
         document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
-                                                                                                                      }
-                                                                                                                      }
-                                                                                                                      }
+		}
+	}
+}
 
-https.send(null);
+getmsgsa.send(null);
 
 
 
 
 /*sending with enter*/
 
-// var input = document.getElementById("messagebox");
+// var input = document.getElementById("a");
 // input.addEventListener("keypress", function(event) {
 //  if (event.key === "Enter") {
 //    event.preventDefault();
